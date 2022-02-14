@@ -976,9 +976,11 @@ export default {
             "Content-Type": "application/form-data; charset=utf-8",
           },
         })
-        .then((res) => {
+        .then(res => {
           if (res.data.code === 0 && res.data.data.url !== "") {
-            this.$message.success("远程配置上传成功，配置链接已复制到剪贴板，有效期三个月望知悉");
+            this.$message.success(
+              "远程配置上传成功，配置链接已复制到剪贴板，有效期三个月望知悉"
+            );
 
             // 自动填充至『表单-远程配置』
             this.form.remoteConfig = res.data.data.url;
