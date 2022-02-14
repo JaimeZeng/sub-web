@@ -36,7 +36,7 @@
                     style="width: 100%"
                     v-model="form.customBackend"
                     :fetch-suggestions="backendSearch"
-                    placeholder="动动小手，（建议）自行搭建后端服务。例：http://127.0.0.1:25500/sub?"
+                    placeholder="动动小手，（建议）自行搭建后端服务。例: http://127.0.0.1:25500/sub?"
                   >
                     <el-button slot="append" @click="gotoGayhub" icon="el-icon-link">前往项目仓库</el-button>
                   </el-autocomplete>
@@ -79,7 +79,7 @@
                         <el-checkbox v-model="form.emoji" label="Emoji"></el-checkbox>
                       </el-row>
                       <el-row>
-                        <el-checkbox v-model="form.new_name" label="Clash New Field"></el-checkbox>
+                        <el-checkbox v-model="form.scv" label="跳过证书验证"></el-checkbox>
                       </el-row>
                       <el-row>
                         <el-checkbox v-model="form.udp" @change="needUdp = true" label="启用 UDP"></el-checkbox>
@@ -265,13 +265,13 @@ export default {
           "id9 品云": "https://sub.id9.cc/sub?",
           "limbopro 毒奶": "https://limbopro.cyou/sub?",
           nameless13: "https://www.nameless13.com/sub?",
-          prpr: "https://sub.prpr.xyz/sub?",
           "sub 作者 & lhie1": "https://api.dler.io/sub?",
           "sub-web 作者": "https://api.wcc.best/sub?",
           "subconverter 作者": "https://subcon.dlj.tf/sub?",
           "subconverter-vercel 作者": "https://subc.vercel.app/sub?",
-          网友: "https://sub.ops.ci/sub?",
-          肥羊: "https://api.v1.mk/sub?",
+          "网友": "https://sub.ops.ci/sub?",
+          "肥羊": "https://api.v1.mk/sub?",
+          // prpr: "https://sub.prpr.xyz/sub?",
           // "fq.rs": "https://api.sub.fq.rs/sub?",
           // "subconverter 作者 2": "https://subconverter-web.now.sh/sub?",
           // "subconverter 作者 3": "https://subconverter.herokuapp.com/sub?",
@@ -284,10 +284,10 @@ export default {
           { value: "https://limbopro.cyou/sub?" },
           { value: "https://sub.id9.cc/sub?" },
           { value: "https://sub.ops.ci/sub?" },
-          { value: "https://sub.prpr.xyz/sub?" },
           { value: "https://subc.vercel.app/sub?" },
           { value: "https://subcon.dlj.tf/sub?" },
           { value: "https://www.nameless13.com/sub?" },
+          // { value: "https://sub.prpr.xyz/sub?" },
           // { value: "https://subconverter-web.now.sh/sub?" },
           // { value: "https://subconverter.herokuapp.com/sub?" },
           // { value: "https://api.sub.fq.rs/sub?" },
@@ -309,9 +309,18 @@ export default {
                 value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini",
               },
               {
+                label: "ACL4SSR_Mini",
+                value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini",
+              },
+              {
                 label: "ACL4SSR_Full_AdblockPlus",
                 value:
                   "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini",
+              },
+              {
+                label: "ACL4SSR_Mini_AdblockPlus",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini",
               },
               {
                 label: "索尼电视专用",
@@ -926,7 +935,7 @@ export default {
             this.$copyText(res.data.ShortUrl);
             this.$message.success("短链接已复制到剪贴板");
           } else {
-            this.$message.error("短链接获取失败：" + res.data.Message);
+            this.$message.error("短链接获取失败: " + res.data.Message);
           }
         })
         .catch(() => {
@@ -967,17 +976,19 @@ export default {
             "Content-Type": "application/form-data; charset=utf-8",
           },
         })
-        .then((res) => {
-          if (res.data.Code === 1 && res.data.url !== "") {
-            this.$message.success("远程配置上传成功，配置链接已复制到剪贴板，有效期三个月望知悉");
+        .then(res => {
+          if (res.data.code === 0 && res.data.data.url !== "") {
+            this.$message.success(
+              "远程配置上传成功，配置链接已复制到剪贴板，有效期三个月望知悉"
+            );
 
             // 自动填充至『表单-远程配置』
-            this.form.remoteConfig = res.data.Url;
+            this.form.remoteConfig = res.data.data.url;
             this.$copyText(this.form.remoteConfig);
 
             this.dialogUploadConfigVisible = false;
           } else {
-            this.$message.error("远程配置上传失败：" + res.data.Message);
+            this.$message.error("远程配置上传失败: " + res.data.msg);
           }
         })
         .catch(() => {
